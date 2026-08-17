@@ -71,9 +71,7 @@
 
     .eyebrow {
       margin: 0 0 10px;
-
       color: var(--accent);
-
       font-size: 0.78rem;
       font-weight: 700;
       letter-spacing: 0.16em;
@@ -82,7 +80,6 @@
 
     h1 {
       margin: 0;
-
       font-size: clamp(2.2rem, 7vw, 4.6rem);
       line-height: 0.98;
       letter-spacing: -0.045em;
@@ -91,9 +88,7 @@
     .intro {
       max-width: 650px;
       margin: 20px auto 0;
-
       color: var(--muted);
-
       font-size: 1.05rem;
       line-height: 1.6;
     }
@@ -116,22 +111,11 @@
 
     .wheel {
       position: relative;
-
       width: min(380px, 82vw);
       aspect-ratio: 1;
-
       border: 3px solid var(--structure);
       border-radius: 50%;
     }
-
-    /*
-      Every mod-30 position is 12 degrees apart:
-
-      360 / 30 = 12
-
-      The eight labeled positions therefore use:
-      residue × 12deg
-    */
 
     .point {
       --angle: 0deg;
@@ -180,14 +164,6 @@
         scale(1.12);
     }
 
-    /*
-      Current reading where the residue is outside
-      the eight reduced residue classes.
-
-      It uses the same 30-position geometry,
-      but remains smaller and unlabeled.
-    */
-
     .minor-point {
       --angle: 0deg;
 
@@ -234,7 +210,6 @@
 
     .center-label {
       color: var(--muted);
-
       font-size: 0.8rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -242,7 +217,6 @@
 
     .center-value {
       margin-top: 4px;
-
       font-size: clamp(2.3rem, 8vw, 4.2rem);
       font-weight: 800;
       letter-spacing: -0.04em;
@@ -250,19 +224,15 @@
 
     .panel {
       padding: 28px;
-
       border: 1px solid #252a31;
       border-radius: 22px;
-
       background: #0b0d10;
     }
 
     label {
       display: block;
       margin-bottom: 9px;
-
       color: var(--muted);
-
       font-size: 0.82rem;
       font-weight: 700;
       letter-spacing: 0.08em;
@@ -310,16 +280,52 @@
       font-weight: 750;
     }
 
+    .nav-row {
+      display: grid;
+      grid-template-columns:
+        minmax(54px, 0.8fr)
+        minmax(54px, 0.8fr)
+        minmax(120px, 1.7fr)
+        minmax(120px, 1.7fr);
+
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .nav-button {
+      min-height: 38px;
+      padding: 8px 10px;
+
+      border: 1px solid #343a44;
+      border-radius: 10px;
+
+      background: #111419;
+      color: var(--muted);
+
+      font-size: 0.82rem;
+      font-weight: 700;
+
+      transition:
+        border-color 140ms ease,
+        color 140ms ease,
+        background 140ms ease;
+    }
+
+    .nav-button:hover,
+    .nav-button:focus-visible {
+      border-color: var(--accent);
+      color: var(--foreground);
+      background: #171a20;
+    }
+
     .result {
       margin-top: 28px;
       padding-top: 24px;
-
       border-top: 1px solid #252a31;
     }
 
     .equation {
       margin: 0 0 10px;
-
       font-size: 1.65rem;
       font-weight: 750;
       letter-spacing: -0.025em;
@@ -332,9 +338,7 @@
 
     .detail {
       margin: 0;
-
       color: var(--muted);
-
       line-height: 1.55;
     }
 
@@ -390,6 +394,10 @@
       .wheel {
         width: min(340px, 78vw);
       }
+
+      .nav-row {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   </style>
 </head>
@@ -416,12 +424,6 @@
           class="wheel"
           aria-label="Modulo 30 reading space with eight reduced residue classes"
         >
-
-          <!--
-            Actual mod-30 positions.
-
-            angle = residue × 12 degrees
-          -->
 
           <div
             class="point"
@@ -487,11 +489,6 @@
             29
           </div>
 
-          <!--
-            Small unlabeled marker for residues outside
-            the eight reduced residue classes.
-          -->
-
           <div
             class="minor-point hidden"
             id="minorPoint"
@@ -539,6 +536,43 @@
             </button>
 
           </div>
+
+          <div class="nav-row">
+            <button
+              class="nav-button"
+              id="minusOne"
+              type="button"
+              aria-label="Subtract one"
+            >
+              −1
+            </button>
+
+            <button
+              class="nav-button"
+              id="plusOne"
+              type="button"
+              aria-label="Add one"
+            >
+              +1
+            </button>
+
+            <button
+              class="nav-button"
+              id="previousResidue"
+              type="button"
+            >
+              ‹ Previous residue
+            </button>
+
+            <button
+              class="nav-button"
+              id="nextResidue"
+              type="button"
+            >
+              Next residue ›
+            </button>
+          </div>
+
         </form>
 
         <div
@@ -579,6 +613,7 @@
 
     <footer>
       <strong>Reading Point</strong>
+
       <span>
         The modular reading space stays 30 states.
       </span>
@@ -622,6 +657,18 @@
     const minorPoint =
       document.getElementById("minorPoint");
 
+    const minusOne =
+      document.getElementById("minusOne");
+
+    const plusOne =
+      document.getElementById("plusOne");
+
+    const previousResidue =
+      document.getElementById("previousResidue");
+
+    const nextResidue =
+      document.getElementById("nextResidue");
+
 
     function modulo30(n) {
       return ((n % 30) + 30) % 30;
@@ -633,6 +680,21 @@
     }
 
 
+    function currentInteger() {
+      const value = Number(input.value);
+
+      return Number.isInteger(value)
+        ? value
+        : null;
+    }
+
+
+    function setInteger(n) {
+      input.value = n;
+      readInteger(n);
+    }
+
+
     function readInteger(n) {
 
       const residue = modulo30(n);
@@ -641,20 +703,12 @@
         residues.has(residue);
 
 
-      /*
-        Center reading
-      */
-
       centerValue.textContent =
         residue;
 
       equation.textContent =
         `${n} mod 30 = ${residue}`;
 
-
-      /*
-        Eight reduced-residue positions
-      */
 
       points.forEach((point) => {
 
@@ -668,11 +722,6 @@
 
       });
 
-
-      /*
-        Current reading outside the
-        eight reduced residue classes
-      */
 
       if (isReducedResidue) {
 
@@ -708,10 +757,6 @@
       }
 
 
-      /*
-        Mathematical reading
-      */
-
       if (isReducedResidue) {
 
         status.textContent =
@@ -732,6 +777,28 @@
     }
 
 
+    function findNextResidue(n) {
+      let candidate = n + 1;
+
+      while (!residues.has(modulo30(candidate))) {
+        candidate += 1;
+      }
+
+      return candidate;
+    }
+
+
+    function findPreviousResidue(n) {
+      let candidate = n - 1;
+
+      while (!residues.has(modulo30(candidate))) {
+        candidate -= 1;
+      }
+
+      return candidate;
+    }
+
+
     form.addEventListener(
       "submit",
       (event) => {
@@ -739,9 +806,9 @@
         event.preventDefault();
 
         const value =
-          Number(input.value);
+          currentInteger();
 
-        if (!Number.isInteger(value)) {
+        if (value === null) {
 
           status.textContent =
             "Enter an integer";
@@ -757,9 +824,73 @@
     );
 
 
-    /*
-      Initial reading
-    */
+    minusOne.addEventListener(
+      "click",
+      () => {
+
+        const value =
+          currentInteger();
+
+        if (value === null) {
+          return;
+        }
+
+        setInteger(value - 1);
+      }
+    );
+
+
+    plusOne.addEventListener(
+      "click",
+      () => {
+
+        const value =
+          currentInteger();
+
+        if (value === null) {
+          return;
+        }
+
+        setInteger(value + 1);
+      }
+    );
+
+
+    previousResidue.addEventListener(
+      "click",
+      () => {
+
+        const value =
+          currentInteger();
+
+        if (value === null) {
+          return;
+        }
+
+        setInteger(
+          findPreviousResidue(value)
+        );
+      }
+    );
+
+
+    nextResidue.addEventListener(
+      "click",
+      () => {
+
+        const value =
+          currentInteger();
+
+        if (value === null) {
+          return;
+        }
+
+        setInteger(
+          findNextResidue(value)
+        );
+      }
+    );
+
 
     readInteger(137);
   </script>
