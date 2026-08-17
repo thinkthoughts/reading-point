@@ -1,5 +1,9 @@
 # Reading Point Brand
 
+<p align="center">
+  <img src="logo/reading-point-badge-dark.svg" alt="Reading Point logo" width="180">
+</p>
+
 This directory contains the visual identity and style specifications for **Reading Point**.
 
 Reading Point uses a small, reproducible visual system derived from its mathematical and engineering work. The core mark is an eight-position ring representing the reduced residue classes modulo 30:
