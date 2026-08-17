@@ -1,79 +1,899 @@
-# Modulo 30 Reading Point
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-**The modular reading space stays 30 states.**
+  <title>Modulo 30 Reading Point</title>
 
-An integer can become arbitrarily large while its residue modulo 30 remains one of only 30 possible values:
+  <meta
+    name="description"
+    content="Explore the 30-state modular reading space and the eight reduced residue classes modulo 30."
+  />
 
-`{0, 1, 2, ..., 29}`
+  <style>
+    :root {
+      /* Reading Point brand */
+      --rp-black: #050607;
+      --rp-white: #ffffff;
+      --rp-gray: #8f949c;
+      --rp-gray-dark: #6f747c;
+      --rp-pink: #d03878;
+      --rp-blue: #367bf5;
 
-The Modulo 30 Reading Point instrument makes that reduction visible.
+      /* Operational indicators */
+      --rp-red: #e53935;
+      --rp-yellow: #fbc02d;
+      --rp-green: #2ead62;
 
-Enter any integer `n`. The instrument computes:
+      /* Interface */
+      --background: var(--rp-black);
+      --foreground: var(--rp-white);
+      --muted: var(--rp-gray);
+      --structure: var(--rp-gray-dark);
+      --accent: var(--rp-pink);
 
-`n mod 30`
+      /* Wheel geometry */
+      --wheel-radius: 190px;
+    }
 
-and places the result in the 30-state modular reading space.
+    * {
+      box-sizing: border-box;
+    }
 
-Eight of those states are coprime to 30:
+    body {
+      margin: 0;
+      min-height: 100vh;
 
-`{1, 7, 11, 13, 17, 19, 23, 29}`
+      background: var(--background);
+      color: var(--foreground);
 
-These are the reduced residue classes modulo 30.
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
 
-Every prime greater than 5 occupies one of these eight classes. Composite integers may occupy them as well.
+    main {
+      width: min(900px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 64px 0 48px;
+    }
 
-For example:
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
 
-`237642387425387 mod 30 = 17`
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
 
-The magnitude of the integer is large. Its modular reading remains a single state:
+    h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 7vw, 4.6rem);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+    }
 
-`17`
+    .intro {
+      max-width: 650px;
+      margin: 20px auto 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
 
-Because `17` is coprime to 30:
+    .instrument {
+      display: grid;
+      grid-template-columns:
+        minmax(280px, 1fr)
+        minmax(280px, 1fr);
 
-`gcd(237642387425387, 30) = 1`
+      gap: 48px;
+      align-items: center;
+    }
 
-so the integer is immediately excluded from divisibility by 2, 3, and 5.
+    .wheel-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-The highlighted reading therefore means:
+    .wheel {
+      position: relative;
+      width: min(380px, 82vw);
+      aspect-ratio: 1;
+      border: 3px solid var(--structure);
+      border-radius: 50%;
+    }
 
-**coprime to 30**
+    .point {
+      --angle: 0deg;
 
-rather than:
+      position: absolute;
+      top: 50%;
+      left: 50%;
 
-**prime**
+      width: 46px;
+      height: 46px;
+      margin: -23px;
 
-## Reading the instrument
+      border: 2px solid var(--structure);
+      border-radius: 50%;
 
-The ring displays the eight reduced residue classes:
+      background: #15181d;
+      color: var(--muted);
 
-`1 · 7 · 11 · 13 · 17 · 19 · 23 · 29`
+      display: grid;
+      place-items: center;
 
-Where the entered integer occupies one of these classes, that position is highlighted.
+      font-size: 0.88rem;
+      font-weight: 750;
 
-Where its residue is one of the other 22 states, the center still reports the exact value of `n mod 30`, while no reduced-residue position is highlighted.
+      transform:
+        rotate(var(--angle))
+        translateY(calc(-1 * var(--wheel-radius)))
+        rotate(calc(-1 * var(--angle)));
 
-This separates two mathematical objects:
+      transition:
+        background 160ms ease,
+        color 160ms ease,
+        border-color 160ms ease,
+        transform 160ms ease;
+    }
 
-**30-state modular space**
+    .point.active {
+      background: var(--accent);
+      border-color: #ef77aa;
+      color: var(--rp-white);
 
-`{0, 1, 2, ..., 29}`
+      transform:
+        rotate(var(--angle))
+        translateY(calc(-1 * var(--wheel-radius)))
+        rotate(calc(-1 * var(--angle)))
+        scale(1.12);
+    }
 
-**8-state reduced residue system**
+    .minor-point {
+      --angle: 0deg;
 
-`{1, 7, 11, 13, 17, 19, 23, 29}`
+      position: absolute;
+      top: 50%;
+      left: 50%;
 
-## Reading Point
+      width: 22px;
+      height: 22px;
+      margin: -11px;
 
-The instrument is a small example of the Reading Point approach:
+      border-radius: 50%;
 
-**large object → specified transformation → smaller readable state**
+      background: var(--rp-gray);
+      border: 2px solid #b5bac1;
 
-Here the transformation is exact:
+      transform:
+        rotate(var(--angle))
+        translateY(calc(-1 * var(--wheel-radius)))
+        rotate(calc(-1 * var(--angle)));
 
-`n → n mod 30`
+      transition:
+        transform 160ms ease,
+        opacity 160ms ease;
 
-Magnitude changes.
+      z-index: 3;
+    }
 
-**The modular reading space stays 30 states.**
+    .minor-point.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .wheel-center {
+      position: absolute;
+      inset: 25%;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      text-align: center;
+    }
+
+    .center-label {
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .center-value {
+      margin-top: 4px;
+      font-size: clamp(2.3rem, 8vw, 4.2rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .panel {
+      padding: 28px;
+      border: 1px solid #252a31;
+      border-radius: 22px;
+      background: #0b0d10;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      min-width: 0;
+      width: 100%;
+
+      padding: 15px 16px;
+
+      border: 1px solid #343a44;
+      border-radius: 12px;
+      outline: none;
+
+      background: #111419;
+      color: var(--foreground);
+
+      font: inherit;
+      font-size: 1.15rem;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    button {
+      padding: 0 20px;
+
+      border: 0;
+      border-radius: 12px;
+
+      cursor: pointer;
+
+      background: var(--accent);
+      color: var(--rp-white);
+
+      font: inherit;
+      font-weight: 750;
+    }
+
+    .nav-row {
+      display: grid;
+      grid-template-columns:
+        minmax(54px, 0.8fr)
+        minmax(54px, 0.8fr)
+        minmax(120px, 1.7fr)
+        minmax(120px, 1.7fr);
+
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .nav-button {
+      min-height: 38px;
+      padding: 8px 10px;
+
+      border: 1px solid #343a44;
+      border-radius: 10px;
+
+      background: #111419;
+      color: var(--muted);
+
+      font-size: 0.82rem;
+      font-weight: 700;
+
+      transition:
+        border-color 140ms ease,
+        color 140ms ease,
+        background 140ms ease;
+    }
+
+    .nav-button:hover,
+    .nav-button:focus-visible {
+      border-color: var(--accent);
+      color: var(--foreground);
+      background: #171a20;
+    }
+
+    .result {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid #252a31;
+    }
+
+    .equation {
+      margin: 0 0 10px;
+      font-size: 1.65rem;
+      font-weight: 750;
+      letter-spacing: -0.025em;
+    }
+
+    .status {
+      margin: 0 0 8px;
+      font-weight: 700;
+    }
+
+    .detail {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .residue-set {
+      margin-top: 26px;
+
+      color: var(--accent);
+
+      font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Monaco,
+        monospace;
+
+      font-size: 0.92rem;
+    }
+
+    footer {
+      margin-top: 56px;
+      padding-top: 22px;
+
+      border-top: 1px solid #252a31;
+
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+
+      color: var(--muted);
+
+      font-size: 0.8rem;
+    }
+
+    footer strong {
+      color: var(--foreground);
+      font-weight: 650;
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --wheel-radius: min(170px, 39vw);
+      }
+
+      main {
+        padding-top: 38px;
+      }
+
+      .instrument {
+        grid-template-columns: 1fr;
+        gap: 38px;
+      }
+
+      .wheel {
+        width: min(340px, 78vw);
+      }
+
+      .nav-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+
+    <header>
+      <p class="eyebrow">Reading Point</p>
+
+      <h1>Modulo 30</h1>
+
+      <p class="intro">
+        Enter an integer to read its residue modulo 30 and determine whether
+        it occupies one of the eight residue classes coprime to 30.
+      </p>
+    </header>
+
+    <section class="instrument">
+
+      <div class="wheel-wrap">
+
+        <div
+          class="wheel"
+          aria-label="Modulo 30 reading space with eight reduced residue classes"
+        >
+
+          <div
+            class="point"
+            data-residue="1"
+            style="--angle: 12deg"
+          >
+            1
+          </div>
+
+          <div
+            class="point"
+            data-residue="7"
+            style="--angle: 84deg"
+          >
+            7
+          </div>
+
+          <div
+            class="point"
+            data-residue="11"
+            style="--angle: 132deg"
+          >
+            11
+          </div>
+
+          <div
+            class="point"
+            data-residue="13"
+            style="--angle: 156deg"
+          >
+            13
+          </div>
+
+          <div
+            class="point"
+            data-residue="17"
+            style="--angle: 204deg"
+          >
+            17
+          </div>
+
+          <div
+            class="point"
+            data-residue="19"
+            style="--angle: 228deg"
+          >
+            19
+          </div>
+
+          <div
+            class="point"
+            data-residue="23"
+            style="--angle: 276deg"
+          >
+            23
+          </div>
+
+          <div
+            class="point"
+            data-residue="29"
+            style="--angle: 348deg"
+          >
+            29
+          </div>
+
+          <div
+            class="minor-point hidden"
+            id="minorPoint"
+            aria-hidden="true"
+          ></div>
+
+          <div class="wheel-center">
+            <span class="center-label">
+              n mod 30
+            </span>
+
+            <span
+              class="center-value"
+              id="centerValue"
+            >
+              —
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="panel">
+
+        <form id="readerForm">
+
+          <label for="integer">
+            Integer reading point
+          </label>
+
+          <div class="input-row">
+
+            <input
+              id="integer"
+              name="integer"
+              type="number"
+              step="1"
+              value="137"
+              inputmode="numeric"
+              required
+            />
+
+            <button type="submit">
+              Read
+            </button>
+
+          </div>
+
+          <div class="nav-row">
+            <button
+              class="nav-button"
+              id="minusOne"
+              type="button"
+              aria-label="Subtract one"
+            >
+              −1
+            </button>
+
+            <button
+              class="nav-button"
+              id="plusOne"
+              type="button"
+              aria-label="Add one"
+            >
+              +1
+            </button>
+
+            <button
+              class="nav-button"
+              id="previousResidue"
+              type="button"
+            >
+              ‹ Previous residue
+            </button>
+
+            <button
+              class="nav-button"
+              id="nextResidue"
+              type="button"
+            >
+              Next residue ›
+            </button>
+          </div>
+
+        </form>
+
+        <div
+          class="result"
+          aria-live="polite"
+        >
+
+          <p
+            class="equation"
+            id="equation"
+          >
+            137 mod 30 = 17
+          </p>
+
+          <p
+            class="status"
+            id="status"
+          >
+            Reduced residue class modulo 30
+          </p>
+
+          <p
+            class="detail"
+            id="detail"
+          >
+            137 occupies residue class 17, which is coprime to 30.
+          </p>
+
+        </div>
+
+        <div class="residue-set">
+          { 1, 7, 11, 13, 17, 19, 23, 29 }
+        </div>
+
+      </div>
+
+    </section>
+
+    <footer>
+      <strong>Reading Point</strong>
+
+      <span>
+        The modular reading space stays 30 states.
+      </span>
+    </footer>
+
+  </main>
+
+  <script>
+    const residues = new Set([
+      1,
+      7,
+      11,
+      13,
+      17,
+      19,
+      23,
+      29
+    ]);
+
+    const form =
+      document.getElementById("readerForm");
+
+    const input =
+      document.getElementById("integer");
+
+    const centerValue =
+      document.getElementById("centerValue");
+
+    const equation =
+      document.getElementById("equation");
+
+    const status =
+      document.getElementById("status");
+
+    const detail =
+      document.getElementById("detail");
+
+    const points =
+      document.querySelectorAll(".point");
+
+    const minorPoint =
+      document.getElementById("minorPoint");
+
+    const minusOne =
+      document.getElementById("minusOne");
+
+    const plusOne =
+      document.getElementById("plusOne");
+
+    const previousResidue =
+      document.getElementById("previousResidue");
+
+    const nextResidue =
+      document.getElementById("nextResidue");
+
+
+    function modulo30(n) {
+      return ((n % 30) + 30) % 30;
+    }
+
+
+    function residueAngle(residue) {
+      return residue * 12;
+    }
+
+
+    function currentInteger() {
+      const value = Number(input.value);
+
+      return Number.isInteger(value)
+        ? value
+        : null;
+    }
+
+
+    function setInteger(n) {
+      input.value = n;
+      readInteger(n);
+    }
+
+
+    function readInteger(n) {
+
+      const residue = modulo30(n);
+
+      const isReducedResidue =
+        residues.has(residue);
+
+
+      centerValue.textContent =
+        residue;
+
+      equation.textContent =
+        `${n} mod 30 = ${residue}`;
+
+
+      points.forEach((point) => {
+
+        const pointResidue =
+          Number(point.dataset.residue);
+
+        point.classList.toggle(
+          "active",
+          pointResidue === residue
+        );
+
+      });
+
+
+      if (isReducedResidue) {
+
+        minorPoint.classList.add("hidden");
+
+        minorPoint.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+      } else {
+
+        const angle =
+          residueAngle(residue);
+
+        minorPoint.style.setProperty(
+          "--angle",
+          `${angle}deg`
+        );
+
+        minorPoint.classList.remove("hidden");
+
+        minorPoint.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+        minorPoint.setAttribute(
+          "aria-label",
+          `Residue ${residue}`
+        );
+
+      }
+
+
+      if (isReducedResidue) {
+
+        status.textContent =
+          "Reduced residue class modulo 30";
+
+        detail.textContent =
+          `${n} occupies residue class ${residue}, which is coprime to 30.`;
+
+      } else {
+
+        status.textContent =
+          "Outside the reduced residue classes";
+
+        detail.textContent =
+          `${n} occupies residue class ${residue}, which shares a factor with 30.`;
+
+      }
+    }
+
+
+    function findNextResidue(n) {
+      let candidate = n + 1;
+
+      while (!residues.has(modulo30(candidate))) {
+        candidate += 1;
+      }
+
+      return candidate;
+    }
+
+
+    function findPreviousResidue(n) {
+      let candidate = n - 1;
+
+      while (!residues.has(modulo30(candidate))) {
+        candidate -= 1;
+      }
+
+      return candidate;
+    }
+
+
+    form.addEventListener(
+      "submit",
+      (event) => {
+
+        event.preventDefault();
+
+        const value =
+          currentInteger();
+
+        if (value === null) {
+
+          status.textContent =
+            "Enter an integer";
+
+          detail.textContent =
+            "Modulo 30 is evaluated here for integer reading points.";
+
+          return;
+        }
+
+        readInteger(value);
+      }
+    );
+
+
+    minusOne.addEventListener(
+      "click",
+      () => {
+
+        const value =
+          currentInteger();
+
+        if (value === null) {
+          return;
+        }
+
+        setInteger(value - 1);
+      }
+    );
+
+
+    plusOne.addEventListener(
+      "click",
+      () => {
+
+        const value =
+          currentInteger();
+
+        if (value === null) {
+          return;
+        }
+
+        setInteger(value + 1);
+      }
+    );
+
+
+    previousResidue.addEventListener(
+      "click",
+      () => {
+
+        const value =
+          currentInteger();
+
+        if (value === null) {
+          return;
+        }
+
+        setInteger(
+          findPreviousResidue(value)
+        );
+      }
+    );
+
+
+    nextResidue.addEventListener(
+      "click",
+      () => {
+
+        const value =
+          currentInteger();
+
+        if (value === null) {
+          return;
+        }
+
+        setInteger(
+          findNextResidue(value)
+        );
+      }
+    );
+
+
+    readInteger(137);
+  </script>
+
+</body>
+</html>
