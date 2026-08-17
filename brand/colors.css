@@ -1,0 +1,29 @@
+:root {
+  /* Reading Point — neutral */
+  --rp-black: #050607;
+  --rp-white: #ffffff;
+  --rp-gray: #8f949c;
+  --rp-gray-dark: #6f747c;
+
+  /* Reading Point — brand accents */
+  --rp-pink: #d03878;
+  --rp-blue: #367bf5;
+
+  /* Operational indicators */
+  --rp-red: #e53935;
+  --rp-yellow: #fbc02d;
+  --rp-green: #2ead62;
+
+  /* Light mode */
+  --rp-background: var(--rp-white);
+  --rp-foreground: var(--rp-black);
+  --rp-structure: var(--rp-gray-dark);
+  --rp-accent: var(--rp-blue);
+}
+
+[data-theme="dark"] {
+  --rp-background: var(--rp-black);
+  --rp-foreground: var(--rp-white);
+  --rp-structure: var(--rp-gray);
+  --rp-accent: var(--rp-pink);
+}
