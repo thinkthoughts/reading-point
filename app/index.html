@@ -399,7 +399,226 @@
         grid-template-columns: 1fr 1fr;
       }
     }
+  
+    /* Reading Point application sections */
+    .reading-section {
+      margin-top: 72px;
+      padding-top: 56px;
+      border-top: 1px solid #252a31;
+    }
+
+    .reading-section .section-header {
+      max-width: 720px;
+      margin: 0 auto 28px;
+      text-align: center;
+    }
+
+    .reading-section .section-kicker {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 750;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .reading-section h2 {
+      margin: 0;
+      font-size: clamp(1.9rem, 5vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    .section-intro,
+    .reading-copy,
+    .constraint-summary,
+    .reading-note {
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .section-intro {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.65;
+    }
+
+    .reading-copy {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .reading-copy p,
+    .constraint-summary p,
+    .reading-note p {
+      margin-top: 0;
+    }
+
+    .reading-copy strong,
+    .constraint-summary strong,
+    .reading-note strong {
+      color: var(--foreground);
+    }
+
+    .reading-figure {
+      width: 100%;
+      margin: 30px auto 0;
+    }
+
+    .reading-figure img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+      border: 1px solid #252a31;
+      border-radius: 18px;
+      background: #ffffff;
+    }
+
+    /* The SO(10) graphic is portrait; keep it readable without making it enormous. */
+    .so10-application .reading-figure {
+      max-width: 680px;
+    }
+
+    /* The Reading Point 5 graphic is landscape and can use the full content width. */
+    .reading-point-five .reading-figure {
+      max-width: 900px;
+    }
+
+    .reading-figure figcaption {
+      max-width: 720px;
+      margin: 14px auto 0;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .equation-block {
+      max-width: 720px;
+      margin: 28px auto;
+      padding: 20px 22px;
+      overflow-x: auto;
+
+      border: 1px solid #252a31;
+      border-radius: 18px;
+
+      background: #0b0d10;
+      color: var(--foreground);
+
+      text-align: center;
+      font-size: clamp(1.25rem, 4vw, 1.8rem);
+    }
+
+    .residue-equation {
+      color: var(--accent);
+    }
+
+    /* Prevent MathJax display equations from overflowing narrow screens. */
+    .equation-block mjx-container[display="true"] {
+      margin: 0 !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .equation-block svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .constraint-summary {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .reading-note {
+      margin-top: 24px;
+      padding: 18px 20px;
+
+      border-left: 3px solid var(--accent);
+      border-radius: 0 14px 14px 0;
+
+      background: #0b0d10;
+      color: var(--muted);
+
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    .section-cta {
+      margin: 30px 0 0;
+      text-align: center;
+    }
+
+    .section-cta a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      min-height: 44px;
+      padding: 0 18px;
+
+      border: 1px solid #343a44;
+      border-radius: 12px;
+
+      background: #111419;
+      color: var(--foreground);
+
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .section-cta a:hover,
+    .section-cta a:focus-visible {
+      border-color: var(--accent);
+      background: #171a20;
+    }
+
+    @media (max-width: 760px) {
+      .reading-section {
+        margin-top: 56px;
+        padding-top: 42px;
+      }
+
+      .reading-figure {
+        margin-top: 24px;
+      }
+
+      .so10-application .reading-figure {
+        max-width: 100%;
+      }
+
+      .equation-block {
+        padding: 17px 12px;
+        font-size: 1.08rem;
+      }
+    }
+
   </style>
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [["\\(", "\\)"]],
+        displayMath: [["\\[", "\\]"]]
+      },
+      svg: {
+        fontCache: "global"
+      }
+    };
+  </script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+  ></script>
+
 </head>
 
 <body>
@@ -666,7 +885,7 @@
 
   <div class="reading-copy">
     <p>
-      Every prime \(p&gt;5\) resists division by
+      Every prime \(p>5\) resists division by
       \(2\), \(3\), and \(5\). Therefore its residue modulo 30
       must occupy one of eight classes:
     </p>
