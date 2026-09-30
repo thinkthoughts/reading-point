@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Reading Points and Galerkin Limits — Specification Leads Construction. An interpretation of specification order in Wang's Lean formalization of the two-dimensional Navier–Stokes Galerkin construction.">
-<title>Reading Points and Galerkin Limits — v3.1</title>
+<title>Reading Points and Galerkin Limits — v3.2</title>
 
 <script>
 window.MathJax = {
@@ -89,7 +89,7 @@ footer{padding:32px 0 56px;color:var(--muted);font-size:.86rem}
 <main>
 <section id="A">
 <h2>A — Abstract</h2>
-<p>We study the specification structure of the Galerkin construction formalized by Wang for global Leray–Hopf weak solutions of the two-dimensional Navier–Stokes equations. The construction begins with finite-dimensional Galerkin systems, where transport cancellation yields an exact energy identity, and proceeds through uniform estimates, space–time compactness, and convergence to a weakly continuous velocity path satisfying the energy inequality at every time. We call each specified time \(t\) a <strong>reading point</strong>: a point where the established weakly continuous representative and its admissible energy bound can be read directly, while the approximating sequence remains part of the construction that establishes them. The passage from exact finite-dimensional identities to a limiting inequality provides a concrete example of specification leading construction. We formulate this ordering as a specification grammar: leading constraints organize engineering objects and measurable states; leading specifications constrain admissible generalizations; and admissible generalizations trail leading specifications.</p>
+<p>We study the specification structure of the Galerkin construction formalized by Wang for global Leray–Hopf weak solutions of the two-dimensional Navier–Stokes equations. The construction begins with Galerkin systems, where transport cancellation yields an exact energy identity, and proceeds through uniform estimates, space–time compactness, and convergence to a weakly continuous velocity path satisfying the energy inequality at every time. We call each specified time \(t\) a <strong>reading point</strong>: a point where the established weakly continuous representative and its admissible energy bound can be read directly, while the approximating sequence remains part of the construction that establishes them. The passage from exact Galerkin identities to an inherited limiting inequality provides a concrete example of specification leading construction. We formulate this ordering as a specification grammar: leading constraints organize engineering objects and measurable states; leading specifications constrain admissible generalizations; and admissible generalizations trail leading specifications.</p>
 </section>
 
 <section id="B">
@@ -105,7 +105,7 @@ u(0)=u_0. \tag{1}
 <div class="math">\[
 u_c:[0,\infty)\to H_\Omega, \tag{2}
 \]</div>
-<p>satisfies the weak equation on every finite horizon, and obeys the energy inequality at every time.</p>
+<p>satisfies the weak equation on every specified horizon, and obeys the energy inequality at every time.</p>
 <p>For every integer \(N\geq0\) and \(t\in[0,N]\),</p>
 <div class="math">\[
 \|u_c(t)\|_{H_\Omega}^2+
@@ -115,7 +115,7 @@ u_c:[0,\infty)\to H_\Omega, \tag{2}
 \|u_0\|_{H_\Omega}^2. \tag{3}
 \]</div>
 <p>We call the specified \(t\) a <strong>reading point</strong>. Once the representative \(u_c\) has been established, its velocity value and admissible energy bound can be read directly at \(t\). The Galerkin approximations remain part of the construction establishing that reading.</p>
-<p>At each Galerkin level, the corresponding energy relation is exact. For the finite interval \(I=[a,b]\), where \(a\) is the initial time, the schematic form is</p>
+<p>At each Galerkin level, the corresponding energy relation is exact. For the interval \(I=[a,b]\), where \(a\) is the initial time, the schematic form is</p>
 <div class="math">\[
 E_k(t)+D_k[a,t]=E_k(a). \tag{4}
 \]</div>
@@ -177,8 +177,8 @@ t\longmapsto\langle u_c(t),y\rangle_{H_\Omega} \tag{11}
 </section>
 
 <section id="D">
-<h2>D — Finite-Dimensional Galerkin Construction</h2>
-<p>The finite-horizon construction is carried out on</p>
+<h2>D — Galerkin Construction</h2>
+<p>The Galerkin construction on a specified interval is carried out on</p>
 <div class="math">\[I=[a,b] \tag{16}\]</div>
 <p>using the rectangular spaces \(V_Q\) and \(H_Q\). The compact, injective, dense embedding</p>
 <div class="math">\[J_Q:V_Q\to H_Q \tag{17}\]</div>
@@ -186,7 +186,7 @@ t\longmapsto\langle u_c(t),y\rangle_{H_\Omega} \tag{11}
 <div class="math">\[\mathcal K_Q=J_Q^\ast J_Q. \tag{18}\]</div>
 <p>There are orthonormal bases \((e_i)\) of \(V_Q\) and \((f_i)\) of \(H_Q\), together with singular values \(\sigma_i>0\), satisfying</p>
 <div class="math">\[J_Qe_i=\sigma_i f_i. \tag{19}\]</div>
-<p>Nested finite index sets \(K_m\) define</p>
+<p>Nested mode sets \(K_m\) define</p>
 <div class="math">\[H_m=\operatorname{span}\{f_i:i\in K_m\}. \tag{20}\]</div>
 <p>The associated orthogonal projections satisfy</p>
 <div class="math">\[
@@ -215,7 +215,7 @@ b_Q(u,v,w)=-b_Q(u,w,v), \tag{25}
 <div class="math">\[
 \langle \mathcal V(t,u),v\rangle_H=-A_Q(u,v)-b(u,u,v)+F(t)(v). \tag{27}
 \]</div>
-<p>Wang’s finite-dimensional theorem gives the exact energy identity</p>
+<p>Wang’s Galerkin ODE theorem gives the exact energy identity</p>
 <div class="math">\[
 \|u(T)\|_H^2+
 2\int_{t_0}^{T}A_Q(u,u)\,dt
@@ -243,7 +243,7 @@ J_Q\to\text{spectral coordinates}\to(H_m,E_m,\Pi_m)
 
 <section id="E">
 <h2>E — Compactness and the Reading Point</h2>
-<p>The uniform bounds prepare the passage to the limit. Each fixed finite-dimensional projection has a uniform \(1/2\)-Hölder modulus in time. Finite-dimensional Arzelà–Ascoli therefore supplies uniform convergence along a subsequence, while the operator-norm spectral-tail estimate controls the high-mode remainder.</p>
+<p>The uniform bounds prepare the passage to the limit. Each fixed-mode projection has a uniform \(1/2\)-Hölder modulus in time. Arzelà–Ascoli on each Galerkin space \(H_m\) therefore supplies uniform convergence along a subsequence, while the operator-norm spectral-tail estimate controls the high-mode remainder.</p>
 <p>The resulting spectral compactness argument yields</p>
 <div class="math">\[
 u_{H,k}\to u_H\quad\text{strongly in }L^2(I;H_Q) \tag{31}
@@ -262,7 +262,7 @@ G_Qu_{V,k}\rightharpoonup G_Qu_V \tag{34}
 <div class="math">\[
 L^2\!\left(I;L^2(Q;\mathbb R^{2\times2})\right). \tag{35}
 \]</div>
-<p>Wang then uses uniform convergence of every fixed finite-dimensional projection to construct</p>
+<p>Wang then uses uniform convergence of every fixed-mode projection to construct</p>
 <div class="math">\[u_c:I\to H_Q \tag{36}\]</div>
 <p>such that, for every \(t\in I\),</p>
 <div class="math">\[
@@ -386,13 +386,13 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right). \tag{53}
 \end{array}
 } \tag{56}
 \]</div>
-<p>The equality records the exact finite-dimensional balance. The inequality is Wang’s <em>inherited energy inequality</em>: the admissible property carried to the limiting reading point. Classical two-dimensional regularity theory can strengthen the energy relation further; that strengthening lies outside Wang’s formalized statement and outside the specification used here.</p>
+<p>The equality records the exact Galerkin balance. The inequality is Wang’s <em>inherited energy inequality</em>: the admissible property carried to the limiting reading point. Classical two-dimensional regularity theory can strengthen the energy relation further; that strengthening lies outside Wang’s formalized statement and outside the specification used here.</p>
 <p>For \(\Omega\), zero extension makes \(V_\Omega\) and \(H_\Omega\) closed subspaces of
 \(V_Q\) and \(H_Q\). Restricting \(J_Q\) gives a compact, injective, dense map
 \(J_\Omega:V_\Omega\to H_\Omega\). The Ladyzhenskaya bound and skew cancellation transfer through
 the zero extensions. The spectral construction is then applied to \(J_\Omega\), producing
 \(\Omega\)-adapted Galerkin spaces, lifts, and projections.</p>
-<p>For each integer horizon \([0,N]\), finite-dimensional ODE uniqueness makes the Galerkin paths
+<p>For each integer horizon \([0,N]\), Galerkin ODE uniqueness makes the Galerkin paths
 consistent under restriction. A diagonal extraction over the integer horizons produces one subsequence
 converging strongly on every horizon; weak compactness refines it in the energy spaces, and a further
 diagonal extraction makes every fixed spectral projection converge uniformly on every \([0,N]\).
@@ -453,7 +453,7 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right), \tag{61}
 \]</div>
 <p>If \(\mathcal C'\) denotes a proposed generalization, its admissibility relative to the specification \(\mathcal S\) can be written schematically as</p>
 <div class="math">\[\operatorname{Admissible}(\mathcal C';\mathcal S). \tag{64}\]</div>
-<p>The criterion concerns preservation of specification. Alternative approximation machinery can qualify where it establishes the specified properties.</p>
+<p>The criterion concerns preservation of specification. Alternative Galerkin or approximation constructions can qualify where they establish the specified properties.</p>
 <p>Wang’s forced rectangle theorem supplies a concrete generalized specification. For admissible forcing
 \(F\), the every-time energy requirement becomes</p>
 <div class="math">\[
@@ -483,7 +483,7 @@ additional engineering step required for its admissible construction.</p>
 
 <section id="H">
 <h2>H — Discussion: Specification Leads Construction</h2>
-<p>Wang’s formalization exposes a detailed construction: graph spaces, compact spectral coordinates, projections, finite-dimensional ODEs, transport cancellation, exact energy identities, uniform estimates, space–time compactness, nonlinear convergence, a weakly continuous representative, and weak lower semicontinuity. The theorem presents the result through a smaller collection of properties of the established limiting solution.</p>
+<p>Wang’s formalization exposes a detailed construction: graph spaces, compact spectral coordinates, projections, Galerkin coefficient ODEs, transport cancellation, exact energy identities, uniform estimates, space–time compactness, nonlinear convergence, a weakly continuous representative, and weak lower semicontinuity. The theorem presents the result through a smaller collection of properties of the established weakly continuous representative.</p>
 <p>The reading point identifies one such state:</p>
 <div class="math">\[
 X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right),\qquad
@@ -491,15 +491,24 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right),\qquad
 \]</div>
 <p>The approximating sequence establishes \(u_c\); the established representative supplies \(u_c(t)\) at every specified \(t\). The same selected subsequence supports the strong velocity limit, weak energy-space limit, weakly continuous representative, nonlinear passage, and energy inequality.</p>
 <div class="callout math">\[
+\boxed{
+\text{Galerkin construction}
+\longrightarrow
+\text{established representative}
+\longrightarrow
+\text{reading point}.
+}
+\]</div>
+<div class="callout math">\[
 \boxed{\text{exact approximating identity}\longrightarrow
 \text{admissible limiting inequality}.} \tag{69}
 \]</div>
 <p>Here the transition from \(=\) to \(\leq\) is carried by weak convergence and weak lower semicontinuity. The resulting inherited energy inequality remains the every-time bound specified for the Leray–Hopf solution.</p>
-<p>The global construction adds another lift. Finite-horizon representatives agree pointwise on overlaps, so a specified \(t\geq0\) can be read through any integer horizon containing it. Wang thereby obtains</p>
+<p>The global construction adds another lift. Integer-horizon representatives agree pointwise on overlaps, so a specified \(t\geq0\) can be read through any integer horizon containing it. Wang thereby obtains</p>
 <div class="callout math">\[
 \boxed{t\in[0,\infty)\longmapsto u_c(t)\in H_\Omega.} \tag{70}
 \]</div>
-<p>The restriction of this path to every finite horizon retains the initial value, weak continuity, weak equation, and every-time energy inequality.</p>
+<p>The restriction of this path to every integer horizon retains the initial value, weak continuity, weak equation, and every-time energy inequality.</p>
 <p>The specification grammar extracted from this example is</p>
 <div class="math">\[
 \boxed{\text{leading constraints}\to\text{engineering objects}\to\text{measurable states},} \tag{71}
@@ -540,7 +549,7 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right),\qquad
 </main>
 
 <footer>
-  <div>Reading Points and Galerkin Limits · Specification Leads Construction · v3.1 technical freeze</div>
+  <div>Reading Points and Galerkin Limits · Specification Leads Construction · v3.2 specificity freeze</div>
 </footer>
 </body>
 </html>
