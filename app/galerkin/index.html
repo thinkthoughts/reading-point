@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Reading Points and Galerkin Limits — Specification Leads Construction. An interpretation of specification order in Wang's Lean formalization of the two-dimensional Navier–Stokes Galerkin construction.">
+<title>Reading Points and Galerkin Limits</title>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(','\\)']],
+    displayMath: [['\\[','\\]']],
+    tags: 'ams'
+  },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0d0f12;
+  --panel:#13171c;
+  --text:#e9edf1;
+  --muted:#a9b2bc;
+  --line:#29313a;
+  --soft:#171c22;
+  --link:#b9d7ff;
+  --max:860px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.68;
+}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+header,main,footer{width:min(var(--max),calc(100% - 36px));margin:auto}
+header{padding:72px 0 34px;border-bottom:1px solid var(--line)}
+.kicker{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(2.2rem,7vw,4.5rem);line-height:1.02;letter-spacing:-.045em;margin:.3rem 0 .8rem}
+.subtitle{font-size:1.25rem;color:var(--muted);font-style:italic}
+nav{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:2rem}
+nav a{
+  border:1px solid var(--line);border-radius:999px;padding:.28rem .65rem;
+  color:var(--muted);font-size:.82rem
+}
+main{padding:28px 0 70px}
+section{padding:34px 0;border-bottom:1px solid var(--line)}
+h2{font-size:1.65rem;letter-spacing:-.02em;margin:0 0 1.2rem}
+h3{font-size:1.1rem;margin:1.8rem 0 .6rem}
+p{margin:.85rem 0}
+.math{overflow-x:auto;padding:.35rem 0}
+.callout{
+  margin:1.4rem 0;padding:1rem 1.1rem;border:1px solid var(--line);
+  border-left:3px solid var(--muted);background:var(--soft);border-radius:8px
+}
+.term{font-weight:700}
+.note{color:var(--muted)}
+.refs p{padding-left:2.2rem;text-indent:-2.2rem}
+footer{padding:32px 0 56px;color:var(--muted);font-size:.86rem}
+@media(max-width:600px){
+  header{padding-top:48px}
+  h1{font-size:2.55rem}
+  section{padding:28px 0}
+}
+</style>
+</head>
+<body>
+<header id="Z">
+  <div class="kicker">Z — Reading Point</div>
+  <h1>Reading Points and Galerkin Limits</h1>
+  <div class="subtitle">Specification Leads Construction</div>
+  <nav aria-label="Sections">
+    <a href="#A">A · Abstract</a><a href="#B">B · Introduction</a>
+    <a href="#C">C · Specification</a><a href="#D">D · Galerkin</a>
+    <a href="#E">E · Compactness</a><a href="#F">F · Limit</a>
+    <a href="#G">G · Grammar</a><a href="#H">H · Discussion</a>
+    <a href="#R">R · References</a>
+  </nav>
+</header>
+
+<main>
+<section id="A">
+<h2>A — Abstract</h2>
+<p>We study the specification structure of the Galerkin construction formalized by Wang for global Leray–Hopf weak solutions of the two-dimensional Navier–Stokes equations. The construction begins with finite-dimensional Galerkin systems, where transport cancellation yields an exact energy identity, and proceeds through uniform estimates, space–time compactness, and convergence to a weakly continuous velocity path satisfying the energy inequality at every time. We call each specified time \(t\) a <strong>reading point</strong>: a point where the established weakly continuous representative and its admissible energy bound can be read directly, while the approximating sequence remains part of the construction that establishes them. The passage from exact finite-dimensional identities to a limiting inequality provides a concrete example of specification leading construction. We formulate this ordering as a specification grammar: leading constraints organize engineering objects and measurable states; leading specifications constrain admissible generalizations; and admissible generalizations trail leading specifications.</p>
+</section>
+
+<section id="B">
+<h2>B — Introduction: A Reading Point and Its Construction</h2>
+<p>Consider the normalized, unforced incompressible Navier–Stokes system on a bounded open domain \(\Omega\subset\mathbb R^2\),</p>
+<div class="math">\[
+\partial_tu-\Delta u+(u\cdot\nabla)u+\nabla p=0,\qquad
+\nabla\cdot u=0,\qquad
+u|_{\partial\Omega}=0,\qquad
+u(0)=u_0. \tag{1}
+\]</div>
+<p>Wang formalizes in Lean 4 the Galerkin construction of a global Leray–Hopf weak solution for every initial datum in the corresponding solenoidal \(L^2\) velocity space. The resulting solution has a weakly continuous representative</p>
+<div class="math">\[
+u_c:[0,\infty)\to H_\Omega, \tag{2}
+\]</div>
+<p>satisfies the weak equation on every finite horizon, and obeys the energy inequality at every time.</p>
+<p>For every integer \(N\geq0\) and \(t\in[0,N]\),</p>
+<div class="math">\[
+\|u_c(t)\|_{H_\Omega}^2+
+2\int_0^t
+\|G_\Omega u_V^N(s)\|_{L^2(Q)}^2\,ds
+\leq
+\|u_0\|_{H_\Omega}^2. \tag{3}
+\]</div>
+<p>We call the specified \(t\) a <strong>reading point</strong>. Once the representative \(u_c\) has been established, its velocity value and admissible energy bound can be read directly at \(t\). The Galerkin approximations remain part of the construction establishing that reading.</p>
+<p>At each Galerkin level, the corresponding energy relation is exact. In schematic notation,</p>
+<div class="math">\[
+E_k(t)+D_k[a,t]=E_k(a). \tag{4}
+\]</div>
+<p>At the limiting reading point,</p>
+<div class="math">\[
+E(t)+D[a,t]\leq E(a). \tag{5}
+\]</div>
+<p>Weak lower semicontinuity carries the exact approximating balance into the admissible limiting bound.</p>
+<div class="callout math">\[
+\boxed{\text{leading specification}\longrightarrow
+\text{constraints on admissible construction}.} \tag{6}
+\]</div>
+<p>In proof order, the construction produces the objects satisfying that specification. Our contribution is an interpretation of this ordering in Wang’s kernel-checked construction.</p>
+</section>
+
+<section id="C">
+<h2>C — Leading Specification: The Weak Solution</h2>
+<p>Choose an auxiliary rectangle \(Q\) satisfying</p>
+<div class="math">\[\Omega\subset Q^\circ. \tag{7}\]</div>
+<p>Let \(D_\sigma(\Omega)\) denote the compactly supported \(C^1\) divergence-free fields in \(\Omega\), extended by zero to \(Q\). Wang defines \(H_\Omega\) as their closure in \(L^2(Q;\mathbb R^2)\) and \(V_\Omega\) as the closure of their velocity–gradient graphs. The coordinate maps are</p>
+<div class="math">\[
+J_\Omega:V_\Omega\to H_\Omega,\qquad
+G_\Omega:V_\Omega\to L^2(Q;\mathbb R^{2\times2}). \tag{8}
+\]</div>
+<p>For every \(u_0\in H_\Omega\), Wang constructs \(u_c\) as in (2) and, for every integer \(N\geq0\),</p>
+<div class="math">\[u_V^N\in L^2([0,N];V_\Omega), \tag{9}\]</div>
+<p>with</p>
+<div class="math">\[
+u_c(0)=u_0,\qquad
+J_\Omega u_V^N=u_c\quad\text{a.e. on }[0,N]. \tag{10}
+\]</div>
+<p>For every \(y\in H_\Omega\),</p>
+<div class="math">\[
+t\longmapsto\langle u_c(t),y\rangle_{H_\Omega} \tag{11}
+\]</div>
+<p>is continuous.</p>
+<p>For \(t\in[0,N]\), define</p>
+<div class="math">\[
+E(t):=\|u_c(t)\|_{H_\Omega}^2 \tag{12}
+\]</div>
+<p>and</p>
+<div class="math">\[
+D_N[0,t]:=
+2\int_0^t\|G_\Omega u_V^N(s)\|_{L^2(Q)}^2\,ds. \tag{13}
+\]</div>
+<div class="callout math">\[
+\boxed{E(t)+D_N[0,t]\leq E(0).} \tag{14}
+\]</div>
+<p>For every \(\varphi\in V_\Omega\) and scalar time test \(\eta\in C^1([0,N])\) satisfying \(\eta(N)=0\),</p>
+<div class="math">\[
+\begin{aligned}
+-&\int_0^N\langle u_c(t),J_\Omega\varphi\rangle_{H_\Omega}\eta'(t)\,dt\\
+&+\int_0^N\langle G_\Omega u_V^N(t),G_\Omega\varphi\rangle_{L^2(Q)}\eta(t)\,dt\\
+&+\int_0^N b_\Omega(u_V^N(t),u_V^N(t),\varphi)\eta(t)\,dt\\
+&=\langle u_0,J_\Omega\varphi\rangle_{H_\Omega}\eta(0).
+\end{aligned}\tag{15}
+\]</div>
+<p>In our terminology, the initial value, weak continuity, almost-everywhere compatibility, weak equation, and every-time energy inequality form the <strong>leading specification</strong>. They state what an admissible construction must establish.</p>
+</section>
+
+<section id="D">
+<h2>D — Finite-Dimensional Galerkin Construction</h2>
+<p>The finite-horizon construction is carried out on</p>
+<div class="math">\[I=[a,b] \tag{16}\]</div>
+<p>using the rectangular spaces \(V_Q\) and \(H_Q\). The compact, injective, dense embedding</p>
+<div class="math">\[J_Q:V_Q\to H_Q \tag{17}\]</div>
+<p>provides spectral coordinates through the compact positive operator</p>
+<div class="math">\[T=J_Q^\ast J_Q. \tag{18}\]</div>
+<p>There are orthonormal bases \((e_i)\) of \(V_Q\) and \((f_i)\) of \(H_Q\), together with singular values \(\sigma_i>0\), satisfying</p>
+<div class="math">\[J_Qe_i=\sigma_i f_i. \tag{19}\]</div>
+<p>Nested finite index sets \(K_m\) define</p>
+<div class="math">\[H_m=\operatorname{span}\{f_i:i\in K_m\}. \tag{20}\]</div>
+<p>The associated orthogonal projections satisfy</p>
+<div class="math">\[
+J_QP_m^V=P_m^HJ_Q \tag{21}
+\]</div>
+<p>and</p>
+<div class="math">\[
+\|J_Q-P_m^HJ_Q\|_{V_Q\to H_Q}\to0. \tag{22}
+\]</div>
+<p>Wang constructs exact lifts</p>
+<div class="math">\[
+E_m:H_m\to V_Q,\qquad J_QE_m=\operatorname{id}_{H_m}, \tag{23}
+\]</div>
+<p>and test projections \(Q_m:V_Q\to H_m\) with</p>
+<div class="math">\[
+E_mQ_m=P_m^V,\qquad P_m^Vv\to v\quad\text{in }V_Q. \tag{24}
+\]</div>
+<p>These spectral objects connect the \(H_Q\)-coordinates used by the coefficient ODE with the \(V_Q\)-coordinates carrying gradient control.</p>
+<p>The convection form satisfies the skew identity</p>
+<div class="math">\[
+b_Q(u,v,w)=-b_Q(u,w,v), \tag{25}
+\]</div>
+<p>hence</p>
+<div class="math">\[b_Q(u,u,u)=0. \tag{26}\]</div>
+<p>Riesz representation converts diffusion, convection, and forcing on each \(H_m\) into a coefficient ODE. Abstractly,</p>
+<div class="math">\[
+\langle R(t,u),v\rangle_H=-a(u,v)-b(u,u,v)+F(t)(v). \tag{27}
+\]</div>
+<p>Wang’s finite-dimensional theorem gives the exact energy identity</p>
+<div class="math">\[
+\|u(T)\|_H^2+
+2\int_{t_0}^{T}a(u,u)\,dt
+=
+\|u_0\|_H^2+
+2\int_{t_0}^{T}F(t)(u(t))\,dt. \tag{28}
+\]</div>
+<p>For the unforced construction \(F=0\),</p>
+<div class="callout math">\[
+\boxed{
+\|u_m(t)\|_H^2+
+2\int_a^t a(u_m(s),u_m(s))\,ds
+=
+\|u_m(a)\|_H^2.
+} \tag{29}
+\]</div>
+<p>Skew cancellation therefore yields both an exact balance and the uniform control required to continue the coefficient solution across the full interval. The Ladyzhenskaya estimate additionally supplies the uniform dual-space derivative control used in compactness.</p>
+<div class="callout math">\[
+\boxed{
+J_Q\to\text{spectral coordinates}\to(H_m,E_m,Q_m)
+\to\text{coefficient ODE}\to\text{exact energy identity}\to\text{uniform bounds}.
+} \tag{30}
+\]</div>
+</section>
+
+<section id="E">
+<h2>E — Compactness and the Reading Point</h2>
+<p>The uniform bounds prepare the passage to the limit. Each fixed finite-dimensional projection has a uniform \(1/2\)-Hölder modulus in time. Finite-dimensional Arzelà–Ascoli therefore supplies uniform convergence along a subsequence, while (22) controls the high-mode remainder.</p>
+<p>The resulting spectral compactness argument yields</p>
+<div class="math">\[
+u_{H,k}\to u_H\quad\text{strongly in }L^2(I;H_Q) \tag{31}
+\]</div>
+<p>and, along the same selected sequence,</p>
+<div class="math">\[
+u_{V,k}\rightharpoonup u_V\quad\text{weakly in }L^2(I;V_Q), \tag{32}
+\]</div>
+<p>with</p>
+<div class="math">\[J_Qu_V=u_H. \tag{33}\]</div>
+<p>The gradient coordinate also converges weakly:</p>
+<div class="math">\[
+G_Qu_{V,k}\rightharpoonup G_Qu_V \tag{34}
+\]</div>
+<p>in</p>
+<div class="math">\[
+L^2\!\left(I;L^2(Q;\mathbb R^{2\times2})\right). \tag{35}
+\]</div>
+<p>Wang then uses uniform convergence of every fixed finite-dimensional projection to construct</p>
+<div class="math">\[u_c:I\to H_Q \tag{36}\]</div>
+<p>such that, for every \(t\in I\),</p>
+<div class="math">\[
+u_{H,k}(t)\rightharpoonup u_c(t)\quad\text{in }H_Q. \tag{37}
+\]</div>
+<p>For every \(y\in H_Q\),</p>
+<div class="math">\[
+t\longmapsto\langle u_c(t),y\rangle_{H_Q} \tag{38}
+\]</div>
+<p>is continuous, while</p>
+<div class="math">\[
+u_c=u_H\quad\text{a.e. on }I \tag{39}
+\]</div>
+<p>and</p>
+<div class="math">\[u_c(a)=u_0. \tag{40}\]</div>
+<p>Thus the Bochner limit supplies the almost-everywhere class, and the fixed-mode construction lifts that class to a weakly continuous representative specified at every \(t\).</p>
+<div class="callout math">\[
+\boxed{t\longmapsto u_c(t)} \tag{41}
+\]</div>
+<p>supplies the reading points.</p>
+<p>Ladyzhenskaya interpolation further yields the strong velocity convergence required to pass the quadratic convection term. The same selected subsequence therefore supports the nonlinear limit, the weakly continuous representative, and the energy argument.</p>
+</section>
+
+<section id="F">
+<h2>F — Exact Identity to Limit Inequality</h2>
+<p>Fix a reading point</p>
+<div class="math">\[t\in I=[a,b]. \tag{42}\]</div>
+<p>Let \(R_t\) denote restriction of a time-dependent gradient to \([a,t]\). Define</p>
+<div class="math">\[
+X_k(t)=\left(u_{H,k}(t),\sqrt2\,R_tG_Qu_{V,k}\right) \tag{43}
+\]</div>
+<p>in the Hilbert direct sum</p>
+<div class="math">\[
+\mathcal H_t=
+H_Q\oplus_2
+L^2\!\left([a,t];L^2(Q;\mathbb R^{2\times2})\right). \tag{44}
+\]</div>
+<p>Its squared norm is</p>
+<div class="math">\[
+\|X_k(t)\|_{\mathcal H_t}^2
+=
+\|u_{H,k}(t)\|_{H_Q}^2+
+2\int_a^t\|G_Qu_{V,k}(s)\|_{L^2(Q)}^2\,ds. \tag{45}
+\]</div>
+<p>For the unforced system, the exact Galerkin identity gives</p>
+<div class="math">\[
+\|X_k(t)\|_{\mathcal H_t}^2
+=
+\|P_{m_k}^Hu_0\|_{H_Q}^2. \tag{46}
+\]</div>
+<p>Orthogonal projection gives</p>
+<div class="math">\[
+\|P_{m_k}^Hu_0\|_{H_Q}\leq\|u_0\|_{H_Q}. \tag{47}
+\]</div>
+<p>Meanwhile,</p>
+<div class="math">\[
+X_k(t)\rightharpoonup X(t)\quad\text{in }\mathcal H_t, \tag{48}
+\]</div>
+<p>where</p>
+<div class="math">\[
+X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right). \tag{49}
+\]</div>
+<p>The first coordinate converges by (37). The second follows from (34) and boundedness of \(R_t\). Weak lower semicontinuity gives</p>
+<div class="math">\[
+\|X(t)\|_{\mathcal H_t}
+\leq
+\liminf_{k\to\infty}\|X_k(t)\|_{\mathcal H_t}. \tag{50}
+\]</div>
+<p>Since the initial projections converge strongly,</p>
+<div class="math">\[
+P_{m_k}^Hu_0\to u_0\quad\text{in }H_Q, \tag{51}
+\]</div>
+<p>we obtain</p>
+<div class="callout math">\[
+\boxed{
+\|u_c(t)\|_{H_Q}^2+
+2\int_a^t\|G_Qu_V(s)\|_{L^2(Q)}^2\,ds
+\leq
+\|u_0\|_{H_Q}^2.
+} \tag{52}
+\]</div>
+<p>The choice of \(t\) was arbitrary, so (52) holds at every time.</p>
+<div class="callout math">\[
+\boxed{
+\begin{array}{c}
+\displaystyle
+\|u_{H,k}(t)\|_{H_Q}^2+
+2\int_a^t\|G_Qu_{V,k}(s)\|_{L^2(Q)}^2\,ds
+=
+\|P_{m_k}^Hu_0\|_{H_Q}^2
+\\[4mm]
+\Downarrow\quad\text{weak convergence + lower semicontinuity}
+\\[4mm]
+\displaystyle
+\|u_c(t)\|_{H_Q}^2+
+2\int_a^t\|G_Qu_V(s)\|_{L^2(Q)}^2\,ds
+\leq
+\|u_0\|_{H_Q}^2.
+\end{array}
+} \tag{53}
+\]</div>
+<p>The equality records the exact finite-dimensional balance. The inequality records the admissible property carried to the limiting reading point.</p>
+<p>For the bounded open domain \(\Omega\), Wang applies the finite-horizon construction on every \([0,N]\). Galerkin paths are compatible on overlapping horizons, and uniform limits of their fixed projections identify the weakly continuous representatives pointwise on those overlaps. One global path follows:</p>
+<div class="math">\[
+u_c:[0,\infty)\to H_\Omega. \tag{54}
+\]</div>
+<p>Its restriction to every \([0,N]\) carries the weak equation and every-time energy inequality.</p>
+</section>
+
+<section id="G">
+<h2>G — Specification Grammar</h2>
+<p>The Galerkin argument now displays two compatible orders.</p>
+<p>The <strong>construction order</strong> records how the result is established:</p>
+<div class="callout math">\[
+\boxed{
+\text{Galerkin spaces}\to\text{ODE}\to\text{exact identity}\to
+\text{uniform bounds}\to\text{compactness}\to\text{limit}\to
+u_c(t)\to\text{energy inequality}.
+} \tag{55}
+\]</div>
+<p>The <strong>specification order</strong> records what an admissible construction must establish:</p>
+<div class="callout math">\[
+\boxed{\mathcal S\longrightarrow\text{constraints on admissible }\mathcal C.} \tag{56}
+\]</div>
+<p>Here \(\mathcal S\) contains the initial value, weak continuity, compatibility of the velocity and energy representatives, weak equation, and every-time energy inequality.</p>
+<p>A specification is <strong>leading</strong> where it constrains what counts as an admissible construction or generalization. “Leading” therefore specifies an ordering of constraints rather than a chronology of proof steps.</p>
+<p>The construction introduces <strong>engineering objects</strong> including</p>
+<div class="math">\[
+J_Q,\quad(e_i,f_i,\sigma_i),\quad H_m,\quad E_m,\quad Q_m,\quad
+P_m^H,\quad P_m^V,\quad u_m,\quad R_t. \tag{57}
+\]</div>
+<p>These objects mediate between the leading constraints and the limiting quantities established by the proof.</p>
+<p>At a reading point, the relevant <strong>measurable state</strong> is</p>
+<div class="math">\[
+X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right), \tag{58}
+\]</div>
+<p>with</p>
+<div class="math">\[
+\|X(t)\|_{\mathcal H_t}^2
+=
+\|u_c(t)\|_{H_Q}^2+
+2\int_a^t\|G_Qu_V(s)\|_{L^2(Q)}^2\,ds. \tag{59}
+\]</div>
+<div class="callout math">\[
+\boxed{
+\begin{array}{c}
+\textbf{Leading constraints}\\
+\downarrow\\
+\textbf{Engineering objects}\\
+\downarrow\\
+\textbf{Measurable states}\\[2mm]
+\textbf{Leading specifications constrain admissible generalizations}\\
+\textbf{Admissible generalizations trail leading specifications}.
+\end{array}
+} \tag{60}
+\]</div>
+<p>If \(\mathcal C'\) denotes a proposed generalization, its admissibility relative to the specification \(\mathcal S\) can be written schematically as</p>
+<div class="math">\[\mathcal C'\vdash\mathcal S. \tag{61}\]</div>
+<p>The criterion concerns preservation of specification. Alternative approximation machinery can qualify where it establishes the specified properties.</p>
+<div class="callout math">\[
+\boxed{
+\begin{array}{lll}
+\textbf{Specification order:}&\mathcal S&\longrightarrow\text{constraints on }\mathcal C,\\[2mm]
+\textbf{Construction order:}&\mathcal C&\longrightarrow X(t)\longrightarrow\mathcal S_t.
+\end{array}
+} \tag{62}
+\]</div>
+<p>The first line specifies admissibility. The second establishes it.</p>
+<div class="callout math">\[
+\boxed{\textbf{Specification leads construction; construction establishes the reading point.}} \tag{63}
+\]</div>
+</section>
+
+<section id="H">
+<h2>H — Discussion: Specification Leads Construction</h2>
+<p>Wang’s formalization exposes a detailed construction: graph spaces, compact spectral coordinates, projections, finite-dimensional ODEs, transport cancellation, exact energy identities, uniform estimates, space–time compactness, nonlinear convergence, a weakly continuous representative, and weak lower semicontinuity. The theorem presents the result through a smaller collection of properties of the established limiting solution.</p>
+<p>The reading point identifies one such state:</p>
+<div class="math">\[
+X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right),\qquad
+\|X(t)\|_{\mathcal H_t}^2\leq\|u_0\|_{H_Q}^2. \tag{64}
+\]</div>
+<p>The approximating sequence establishes \(u_c\); the established representative supplies \(u_c(t)\) at every specified \(t\). The same selected subsequence supports the strong velocity limit, weak energy-space limit, weakly continuous representative, nonlinear passage, and energy inequality.</p>
+<div class="callout math">\[
+\boxed{\text{exact approximating identity}\longrightarrow
+\text{admissible limiting inequality}.} \tag{65}
+\]</div>
+<p>Here the transition from \(=\) to \(\leq\) is carried by weak convergence and weak lower semicontinuity. The target property remains the every-time energy bound specified for the Leray–Hopf solution.</p>
+<p>The global construction adds another lift. Finite-horizon representatives agree pointwise on overlaps, so a specified \(t\geq0\) can be read through any integer horizon containing it. Wang thereby obtains</p>
+<div class="callout math">\[
+\boxed{t\in[0,\infty)\longmapsto u_c(t)\in H_\Omega.} \tag{66}
+\]</div>
+<p>The restriction of this path to every finite horizon retains the initial value, weak continuity, weak equation, and every-time energy inequality.</p>
+<p>The specification grammar extracted from this example is</p>
+<div class="math">\[
+\boxed{\text{leading constraints}\to\text{engineering objects}\to\text{measurable states},} \tag{67}
+\]</div>
+<p>together with</p>
+<div class="callout math">\[
+\boxed{
+\begin{gathered}
+\text{Leading specifications constrain admissible generalizations.}\\
+\text{Admissible generalizations trail leading specifications.}
+\end{gathered}
+} \tag{68}
+\]</div>
+<p>For this paper, the grammar is an interpretation of the mathematical structure exposed by Wang’s formalization. Other approximation arguments can be read through their own leading constraints, engineering objects, measurable states, and limiting operations.</p>
+<div class="callout math">\[
+\boxed{
+\begin{array}{c}
+\textbf{Specification leads construction.}\\[2mm]
+\textbf{Construction establishes the reading point.}\\[2mm]
+\textbf{The reading point carries the admissible specification.}
+\end{array}
+} \tag{69}
+\]</div>
+</section>
+
+<section id="R" class="refs">
+<h2>R — References</h2>
+<p>[1] Weinan Wang. <em>Formalization of the Galerkin Construction for the Two-Dimensional Navier–Stokes Equations in Lean</em>. arXiv:2609.33033v1 [math.AP], 27 September 2026.</p>
+<p>[2] Weinan Wang. <em>FluidGalerkinLean</em>. Lean 4 software repository, 2026. Lean v4.30.0-rc1; mathlib revision <code>8d6f23e07b24</code>.</p>
+<p>[3] Leonardo de Moura and Sebastian Ullrich. “The Lean 4 Theorem Prover and Programming Language.” In <em>Automated Deduction — CADE 28</em>, Lecture Notes in Computer Science 12699, pp. 625–635. Springer, 2021.</p>
+<p>[4] The mathlib Community. “The Lean Mathematical Library.” In <em>Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs</em>, pp. 367–381, 2020.</p>
+<p>[5] Olga A. Ladyzhenskaya. <em>The Mathematical Theory of Viscous Incompressible Flow</em>. 2nd ed. Gordon and Breach, 1969.</p>
+<p>[6] Jacob Bedrossian and Vlad Vicol. <em>The Mathematical Analysis of the Incompressible Euler and Navier–Stokes Equations: An Introduction</em>. Graduate Studies in Mathematics 225. American Mathematical Society, 2022.</p>
+<p>[7] Jean Leray. “Sur le mouvement d’un liquide visqueux emplissant l’espace.” <em>Acta Mathematica</em> 63 (1934): 193–248.</p>
+</section>
+</main>
+
+<footer>
+  <div>Reading Points and Galerkin Limits · Specification Leads Construction</div>
+</footer>
+</body>
+</html>
