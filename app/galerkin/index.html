@@ -166,6 +166,7 @@ section::before{
   background:var(--accent);
   opacity:.62;
 }
+section:first-of-type::before{display:none}
 h2{
   font-size:clamp(1.45rem,3vw,1.85rem);
   line-height:1.2;
@@ -249,7 +250,8 @@ footer{
 
 <script>
 (function(){
-  const saved = localStorage.getItem('readingpoint-theme');
+  let saved = null;
+  try { saved = localStorage.getItem('readingpoint-theme'); } catch (e) {}
   const systemLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
   document.documentElement.dataset.theme = saved || (systemLight ? 'light' : 'dark');
 })();
@@ -306,11 +308,11 @@ u_c:[0,\infty)\to H_\Omega, \tag{2}
 <p>We call the specified \(t\) a <strong>reading point</strong>. Once the representative \(u_c\) has been established, its velocity value and admissible energy bound can be read directly at \(t\). The Galerkin approximations remain part of the construction establishing that reading.</p>
 <p>At each Galerkin level, the corresponding energy relation is exact. For the interval \(I=[a,b]\), where \(a\) is the initial time, the schematic form is</p>
 <div class="math">\[
-E_k(t)+D_k[a,t]=E_k(a). \tag{4}
+\mathscr E_k(t)+\mathscr D_k[a,t]=\mathscr E_k(a). \tag{4}
 \]</div>
 <p>At the limiting reading point,</p>
 <div class="math">\[
-E(t)+D[a,t]\leq E(a). \tag{5}
+\mathscr E(t)+\mathscr D[a,t]\leq \mathscr E(a). \tag{5}
 \]</div>
 <p>Weak lower semicontinuity carries the exact approximating balance into the admissible limiting bound.</p>
 <div class="callout math">\[
@@ -424,8 +426,11 @@ b_Q(u,v,w)=-b_Q(u,w,v), \tag{25}
 <p>Skew cancellation therefore yields both an exact balance and the uniform control required to continue the coefficient solution across the full interval. The Ladyzhenskaya estimate additionally supplies the uniform dual-space derivative control used in compactness.</p>
 <div class="callout math">\[
 \boxed{
-J_Q\to\text{spectral coordinates}\to(H_m,E_m,\Pi_m)
-\to\text{coefficient ODE}\to\text{exact energy identity}\to\text{uniform bounds}.
+\begin{array}{c}
+J_Q\to\text{spectral coordinates}\to(H_m,E_m,\Pi_m)\\[2mm]
+\downarrow\\[-1mm]
+\text{coefficient ODE}\to\text{exact energy identity}\to\text{uniform bounds}
+\end{array}
 } \tag{30}
 \]</div>
 </section>
@@ -546,7 +551,7 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right). \tag{53}
 \leq
 \liminf_{k\to\infty}\|X_k(t)\|_{\mathcal H_t}. \tag{54}
 \]</div>
-<p>Using the initial-projection convergence established in §E, we obtain</p>
+<p>Using the projection bound (51), we obtain</p>
 <div class="callout math">\[
 \boxed{
 \|u_c(t)\|_{H_Q}^2+
@@ -555,7 +560,7 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right). \tag{53}
 \|u_0\|_{H_Q}^2.
 } \tag{55}
 \]</div>
-<p>The choice of \(t\) was arbitrary, so (52) holds at every time.</p>
+<p>The choice of \(t\) was arbitrary, so (55) holds at every time.</p>
 <div class="callout math">\[
 \boxed{
 \begin{array}{c}
@@ -599,9 +604,13 @@ u_c:[0,\infty)\to H_\Omega. \tag{57}
 <p>The <strong>construction order</strong> records how the result is established:</p>
 <div class="callout math">\[
 \boxed{
-\text{Galerkin spaces}\to\text{ODE}\to\text{exact identity}\to
-\text{uniform bounds}\to\text{compactness}\to\text{limit}\to
-u_c(t)\to\text{energy inequality}.
+\begin{array}{c}
+\text{Galerkin spaces}\to\text{ODE}\to\text{exact identity}\\[2mm]
+\downarrow\\[-1mm]
+\text{uniform bounds}\to\text{compactness}\to\text{limit}\\[2mm]
+\downarrow\\[-1mm]
+u_c(t)\to\text{energy inequality}
+\end{array}
 } \tag{58}
 \]</div>
 <p>The <strong>specification order</strong> records what an admissible construction must establish:</p>
@@ -612,8 +621,8 @@ u_c(t)\to\text{energy inequality}.
 <p>A specification is <strong>leading</strong> where it constrains what counts as an admissible construction or generalization. “Leading” therefore specifies an ordering of constraints rather than a chronology of proof steps.</p>
 <p>The construction introduces <strong>engineering objects</strong> including</p>
 <div class="math">\[
-J_Q,\quad(e_i,f_i,\sigma_i),\quad H_m,\quad E_m,\quad \Pi_m,\quad
-P_m^H,\quad P_m^V,\quad u_m,\quad R_t. \tag{60}
+J_Q,\quad\mathcal K_Q,\quad(e_i,f_i,\sigma_i),\quad H_m,\quad E_m,\quad \Pi_m,\quad
+P_m^H,\quad P_m^V,\quad U_m,\quad R_t. \tag{60}
 \]</div>
 <p>These objects mediate between the leading constraints and the limiting quantities established by the proof.</p>
 <p>At a reading point, the relevant <strong>measurable state</strong> is</p>
@@ -678,7 +687,7 @@ additional engineering step required for its admissible construction.</p>
 X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right),\qquad
 \|X(t)\|_{\mathcal H_t}^2\leq\|u_0\|_{H_Q}^2. \tag{68}
 \]</div>
-<p>The approximating sequence establishes \(u_c\); the established representative supplies \(u_c(t)\) at every specified \(t\). The same selected subsequence supports the strong velocity limit, weak energy-space limit, weakly continuous representative, nonlinear passage, and energy inequality.</p>
+<p>The approximating sequence establishes \(u_c\); the established representative supplies \(u_c(t)\) at every specified \(t\). The common refined subsequence supports the strong velocity limit, weak energy-space limit, weakly continuous representative, nonlinear passage, and energy inequality.</p>
 <div class="callout math">\[
 \boxed{
 \text{Galerkin construction}
@@ -686,21 +695,21 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right),\qquad
 \text{established representative}
 \longrightarrow
 \text{reading point}.
-}
+} \tag{69}
 \]</div>
 <div class="callout math">\[
 \boxed{\text{exact approximating identity}\longrightarrow
-\text{admissible limiting inequality}.} \tag{69}
+\text{admissible limiting inequality}.} \tag{70}
 \]</div>
 <p>Here the transition from \(=\) to \(\leq\) is carried by weak convergence and weak lower semicontinuity. The resulting inherited energy inequality remains the every-time bound specified for the Leray–Hopf solution.</p>
 <p>The global construction adds another lift. Integer-horizon representatives agree pointwise on overlaps, so a specified \(t\geq0\) can be read through any integer horizon containing it. Wang thereby obtains</p>
 <div class="callout math">\[
-\boxed{t\in[0,\infty)\longmapsto u_c(t)\in H_\Omega.} \tag{70}
+\boxed{t\in[0,\infty)\longmapsto u_c(t)\in H_\Omega.} \tag{71}
 \]</div>
 <p>The restriction of this path to every integer horizon retains the initial value, weak continuity, weak equation, and every-time energy inequality.</p>
 <p>The specification grammar extracted from this example is</p>
 <div class="math">\[
-\boxed{\text{leading constraints}\to\text{engineering objects}\to\text{measurable states},} \tag{71}
+\boxed{\text{leading constraints}\to\text{engineering objects}\to\text{measurable states},} \tag{72}
 \]</div>
 <p>together with</p>
 <div class="callout math">\[
@@ -709,7 +718,7 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right),\qquad
 \text{Leading specifications constrain admissible generalizations.}\\
 \text{Admissible generalizations trail leading specifications.}
 \end{gathered}
-} \tag{72}
+} \tag{73}
 \]</div>
 <p>For this paper, the grammar is an interpretation of the mathematical structure exposed by Wang’s formalization. Other approximation arguments can be read through their own leading constraints, engineering objects, measurable states, and limiting operations.</p>
 <div class="callout math">\[
@@ -719,7 +728,7 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right),\qquad
 \textbf{Construction establishes the reading point.}\\[2mm]
 \textbf{The reading point carries the admissible specification.}
 \end{array}
-} \tag{73}
+} \tag{74}
 \]</div>
 </section>
 
@@ -738,7 +747,7 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right),\qquad
 </main>
 
 <footer>
-  <div>Reading Points and Galerkin Limits · Specification Leads Construction · v3.2 specificity freeze</div>
+  <div>Reading Points and Galerkin Limits · Specification Leads Construction · v3.2 presentation freeze</div>
 </footer>
 
 <script>
@@ -754,7 +763,7 @@ X(t)=\left(u_c(t),\sqrt2\,R_tG_Qu_V\right),\qquad
   button.addEventListener('click', function(){
     const next = root.dataset.theme === 'light' ? 'dark' : 'light';
     root.dataset.theme = next;
-    localStorage.setItem('readingpoint-theme', next);
+    try { localStorage.setItem('readingpoint-theme', next); } catch (e) {}
     label();
   });
   label();
